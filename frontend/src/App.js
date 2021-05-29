@@ -37,8 +37,22 @@ function App() {
       .then((res) => res.json())
       .then((data) => setTriangle(data.result));
   }
+
+  const fetchDb = () => {
+    const method = "GET";
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+    fetch('/memo', {method, headers})
+      .then((res) => res.json())
+      .then((data) => console.log(data));
+  }
   return (
     <div className="App">
+      <h1>DBに問い合わせる</h1>
+      <button onClick={fetchDb}>Access Database</button>
+
       <h1>ローマ字を全て大文字にして返すAPI</h1>
       <p>{ text }</p>
       <input onChange={e => setText(e.target.value)} />
