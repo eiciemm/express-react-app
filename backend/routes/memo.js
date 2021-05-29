@@ -15,18 +15,9 @@ router.get('/', function(req, res, next) {
                     content: rows //取得したDBデータ
                 }
                 res.json({ data });
-                // res.render('memo/index', data);
             }
         })
     })
-});
-
-router.get('/add', function(req, res, next) {
-    const data = {
-        title: '追加',
-        content: '新しいデータを入力してください'
-    }
-    res.render('memo/add', data);
 });
 
 router.post('/add', function(req, res, next) {
@@ -42,11 +33,9 @@ router.get('/edit', function(req, res, next) {
         db.get(q, [id], (err, row) => {
             if (!err) {
                 const data = {
-                    title: '更新',
-                    content: 'id = ' + id + 'のレコードを更新',
                     memoData: row
                 }
-                res.render('memo/edit', data);
+                res.json({ data });
             }
         })
     })
@@ -68,11 +57,9 @@ router.get('/delete', function(req, res, next) {
         db.get(q, [id], (err, row) => {
             if (!err) {
                 const data = {
-                    title: '削除',
-                    content: 'id = ' + id + 'のメモを削除しますか？', //取得したDBデータ
                     memoData: row
                 }
-                res.render('memo/delete', data);
+                res.json({ data });
             }
         })
     })
