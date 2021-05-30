@@ -4,11 +4,16 @@ import Main from './Main';
 import Edit from './Edit';
 import Delete from './Delete';
 
+
+const Title = styled.h1`
+  margin-left: 8px;
+`;
+
 const App = () => {
   return (
     <div>
       <BrowserRouter>
-        <h1>To Do List</h1>
+        <Title>To Do List</Title>
         <div>
           <Route path="/memo" exact component={Main} />
           <Route path="/memo/edit" exact component={Edit} />

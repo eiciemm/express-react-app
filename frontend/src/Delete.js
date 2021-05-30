@@ -1,30 +1,50 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
+const headers = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json'
+};
+
+const DeleteText = styled.div`
+  margin: 0 0 22px 8px;
+  > button {
+    width: 90px;
+    height: 30px;
+  }
+`;
+
 const Delete = () => {
+  const history = useHistory();
   const [memoData, setMemoData] = useState({});
   useEffect(() =>{
     const url = new URL(window.location.href);
     const id = url.searchParams.get('id');
     const method = "GET";
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    };
     fetch(`/memo/delete?id=${id}`, {method, headers})
       .then((res) => res.json())
       .then((data) => setMemoData(data.data.memoData));
   },[])
 
+  const handleDelete = () => {
+    const method = "POST";
+    const obj = { id: memoData.id };
+    const body = JSON.stringify(obj);
+    fetch('/memo/delete', {method, headers, body})
+      .then((res) => {
+        if (res.ok) history.push('/memo');
+      })
+  }
+
   return (
     <div>
       <p>以下のメモを削除しますか？</p>
       <p>{memoData.text}</p>
-      <form action="/memo/delete" method="post">
-        <input type="hidden" name="id" value={memoData.id} />
-        <p><input type="submit" value="削除" /></p>
-      </form>
+      <DeleteText>
+        <button onClick={handleDelete}>削除</button>
+      </DeleteText>
       <Link to="/memo">Back</Link>
     </div>
   );
