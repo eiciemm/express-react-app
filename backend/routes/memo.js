@@ -22,8 +22,11 @@ router.get('/', function(req, res, next) {
 
 router.post('/add', function(req, res, next) {
     const tx = req.body.text;
-    db.run('insert into memos (text) values (?)', tx)
-    res.redirect('/memo');
+    db.run('insert into memos (text) values (?)', tx, (err) => {
+        if (!err) {
+            res.send('OK');
+        }
+    })
 });
 
 router.get('/edit', function(req, res, next) {
@@ -45,8 +48,11 @@ router.post('/edit', function(req, res, next) {
     const id = req.body.id;
     const tx = req.body.text;
     const q = "update memos set text = ? where id = ?";
-    db.run(q, tx, id);
-    res.redirect('/memo');
+    db.run(q, tx, id, (err) => {
+        if (!err) {
+            res.send('OK');
+        }
+    })
 });
 
 
@@ -68,8 +74,11 @@ router.get('/delete', function(req, res, next) {
 router.post('/delete', function(req, res, next) {
     const id = req.body.id;
     const q = "delete from memos where id = ?";
-    db.run(q, id);
-    res.redirect('/memo');
+    db.run(q, id, (err) => {
+        if (!err) {
+            res.send('OK');
+        }
+    })
 });
 
 module.exports = router;

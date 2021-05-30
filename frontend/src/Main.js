@@ -2,24 +2,57 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 
-const Form = styled.form`
+const headers = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json'
+};
+
+const CreateNew = styled.div`
+  margin: 0 0 22px 8px;
+  > input {
+    width: 290px;
+    height: 24px;
+  }
+  > button {
+    width: 90px;
+    height: 30px;
+    margin-left: 10px;
+  }
+`;
+
+const List = styled.div`
+  width: 400px;
   display: flex;
-  margin: 8px;
+  justify-content: space-between;
+  margin: 0 0 8px 8px;
+`;
+
+const Text = styled.p`
+  width: 280px;
+  margin: 0;
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  > button {
+    margin-left: 8px;
+  }
 `;
 
 const Main = () => {
   const history = useHistory();
   const [allMemoData, setAllMemoData] = useState([]);
+  const [text, setText] = useState("");
   useEffect(() =>{
+    fetchAllMemoData();
+  },[])
+
+  const fetchAllMemoData = () => {
     const method = "GET";
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    };
     fetch('/memo', {method, headers})
       .then((res) => res.json())
       .then((data) => setAllMemoData(data.data.content));
-  },[])
+  }
 
   const handleEdit = id => {
     history.push(`/memo/edit?id=${id}`)
@@ -29,25 +62,35 @@ const Main = () => {
     history.push(`/memo/delete?id=${id}`)
   }
 
+  const handleCreateNew = () => {
+    const method = "POST";
+    const obj = { text };
+    const body = JSON.stringify(obj);
+    fetch('/memo/add', {method, headers, body})
+      .then((res) => {
+        if (res.ok) fetchAllMemoData();
+      })
+  }
+
   return (
     <div>
+      <CreateNew>
+        <input type="text" name="text" onChange={e => setText(e.target.value)} />
+        <button onClick={handleCreateNew}>新規追加</button>
+      </CreateNew>
       <div>
-        <Form action="/memo/add" method="post">
-          <input type="text" name="text" />
-          <input type="submit" value="新規追加" />
-        </Form>
-      </div>
-      <table>
         {allMemoData.map(memo => {
           return (
-            <tr key={memo.id}>
-              <td>{memo.text}</td>
-              <td><button onClick={() => handleEdit(memo.id)}>編集</button></td>
-              <td><button onClick={() => handleDelete(memo.id)}>削除</button></td>
-            </tr>
+            <List key={memo.id}>
+              <Text>{memo.text}</Text>
+              <Buttons>
+                <button onClick={() => handleEdit(memo.id)}>編集</button>
+                <button onClick={() => handleDelete(memo.id)}>削除</button>
+              </Buttons>
+            </List>
           )
         })}
-      </table>
+      </div>
     </div>
   );
 }
