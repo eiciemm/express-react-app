@@ -29,20 +29,20 @@ router.post('/add', function(req, res, next) {
     })
 });
 
-router.get('/edit', function(req, res, next) {
-    const id = req.query.id;
-    db.serialize(() => {
-        const q = "select * from memos where id = ?";
-        db.get(q, [id], (err, row) => {
-            if (!err) {
-                const data = {
-                    memoData: row
-                }
-                res.json({ data });
-            }
-        })
-    })
-});
+// router.get('/edit', function(req, res, next) {
+//     const id = req.query.id;
+//     db.serialize(() => {
+//         const q = "select * from memos where id = ?";
+//         db.get(q, [id], (err, row) => {
+//             if (!err) {
+//                 const data = {
+//                     memoData: row
+//                 }
+//                 res.json({ data });
+//             }
+//         })
+//     })
+// });
 
 router.post('/edit', function(req, res, next) {
     const id = req.body.id;
@@ -56,20 +56,20 @@ router.post('/edit', function(req, res, next) {
 });
 
 
-router.get('/delete', function(req, res, next) {
-    const id = req.query.id;
-    db.serialize(() => {
-        const q = "select * from memos where id = ?";
-        db.get(q, [id], (err, row) => {
-            if (!err) {
-                const data = {
-                    memoData: row
-                }
-                res.json({ data });
-            }
-        })
-    })
-});
+// router.get('/delete', function(req, res, next) {
+//     const id = req.query.id;
+//     db.serialize(() => {
+//         const q = "select * from memos where id = ?";
+//         db.get(q, [id], (err, row) => {
+//             if (!err) {
+//                 const data = {
+//                     memoData: row
+//                 }
+//                 res.json({ data });
+//             }
+//         })
+//     })
+// });
 
 router.post('/delete', function(req, res, next) {
     const id = req.body.id;
