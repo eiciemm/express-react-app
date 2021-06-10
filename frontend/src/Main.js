@@ -1,6 +1,9 @@
+import React from 'react';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router';
+// import { useHistory } from 'react-router';
+import Edit from './Components/Edit'
+
 
 const headers = {
   'Accept': 'application/json',
@@ -20,6 +23,13 @@ const CreateNew = styled.div`
   }
 `;
 
+const Loading = styled.div`
+  position: absolute;
+  top: 150px;
+  left: 120px;
+  background: white;
+`;
+
 const List = styled.div`
   width: 400px;
   display: flex;
@@ -36,55 +46,119 @@ const Buttons = styled.div`
   display: flex;
   > button {
     margin-left: 8px;
+    height: 30px;
   }
 `;
 
 const Main = () => {
-  const history = useHistory();
   const [allMemoData, setAllMemoData] = useState([]);
+  const [editTargetId, setEditTargetId] = useState(null);
+  const [targetText, setTargetText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
   useEffect(() =>{
+    setIsLoading(true);
     fetchAllMemoData();
   },[])
 
   const fetchAllMemoData = () => {
     const method = "GET";
-    fetch('/memo', {method, headers})
+    fetch('api/v1/memo', {method, headers})
       .then((res) => res.json())
-      .then((data) => setAllMemoData(data.data.content));
+      .then((data) => {
+        setAllMemoData(data.data.content);
+        setIsLoading(false);
+      });
   }
 
-  const handleEdit = id => {
-    history.push(`/memo/edit?id=${id}`)
+  //edit
+  const handleEdit = (id, text) => {
+    setEditTargetId(id);
+    setTargetText(text);
   }
 
+  const applyEdit = () => {
+    const method = "POST";
+    const obj = { id: editTargetId, text: targetText };
+    const body = JSON.stringify(obj);
+    setIsLoading(true);
+    fetch('api/v1/memo/edit', {method, headers, body})
+      .then((res) => {
+        if (res.ok) {
+          fetchAllMemoData();
+          stopEdit();
+        } else {
+          setIsLoading(false);
+        }
+      })
+  }
+
+  const stopEdit = () => {
+    setEditTargetId(null);
+    setTargetText("");
+  }
+
+  //delete
   const handleDelete = id => {
-    history.push(`/memo/delete?id=${id}`)
+    const method = "POST";
+    const obj = { id: id };
+    const body = JSON.stringify(obj);
+    setIsLoading(true);
+    fetch('api/v1/memo/delete', {method, headers, body})
+      .then((res) => {
+        if (res.ok) {
+          fetchAllMemoData();
+          stopEdit();
+        } else {
+          setIsLoading(false);
+        }
+      })
   }
 
+  //create new
   const handleCreateNew = () => {
+    textInputRef.current.value = "";
     const method = "POST";
     const obj = { text };
     const body = JSON.stringify(obj);
-    fetch('/memo/add', {method, headers, body})
+    setIsLoading(true);
+    fetch('api/v1/memo/add', {method, headers, body})
       .then((res) => {
-        if (res.ok) fetchAllMemoData();
+        if (res.ok) {
+          fetchAllMemoData();
+        } else {
+          setIsLoading(false);
+        }
       })
   }
+
+  const textInputRef = React.createRef();
 
   return (
     <div>
       <CreateNew>
-        <input type="text" name="text" onChange={e => setText(e.target.value)} />
+        <input ref={textInputRef} type="text" name="text" onChange={e => setText(e.target.value)} />
         <button onClick={handleCreateNew}>新規追加</button>
       </CreateNew>
+      {isLoading && (
+        <Loading><img src={`${process.env.PUBLIC_URL}/loading.gif`} alt="" /></Loading>
+      )}
       <div>
         {allMemoData.map(memo => {
           return (
             <List key={memo.id}>
-              <Text>{memo.text}</Text>
+              {editTargetId === memo.id ? (
+                <Edit
+                  text={memo.text}
+                  onChange={e => setTargetText(e.target.value)}
+                  applyEdit={applyEdit}
+                  stopEdit={stopEdit}
+                />
+              ) : (
+                <Text>{memo.text}</Text>
+              )}
               <Buttons>
-                <button onClick={() => handleEdit(memo.id)}>編集</button>
+                <button onClick={() => handleEdit(memo.id, memo.text)}>編集</button>
                 <button onClick={() => handleDelete(memo.id)}>削除</button>
               </Buttons>
             </List>
