@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use('/memo', memoRouter);
+app.use('/api/v1/memo', memoRouter);
 
 app.listen(port, () => {
   console.log(`listening on *:${port}`);
