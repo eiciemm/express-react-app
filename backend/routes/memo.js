@@ -20,7 +20,7 @@ router.get('/', function(req, res, next) {
     })
 });
 
-router.post('/add', function(req, res, next) {
+router.post('/', function(req, res, next) {
     const tx = req.body.text;
     db.run('insert into memos (text) values (?)', tx, (err) => {
         if (!err) {
@@ -29,7 +29,7 @@ router.post('/add', function(req, res, next) {
     })
 });
 
-router.post('/edit', function(req, res, next) {
+router.put('/', function(req, res, next) {
     const id = req.body.id;
     const tx = req.body.text;
     const q = "update memos set text = ? where id = ?";
@@ -40,7 +40,7 @@ router.post('/edit', function(req, res, next) {
     })
 });
 
-router.post('/delete', function(req, res, next) {
+router.delete('/', function(req, res, next) {
     const id = req.body.id;
     const q = "delete from memos where id = ?";
     db.run(q, id, (err) => {
