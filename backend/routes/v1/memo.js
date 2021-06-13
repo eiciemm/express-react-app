@@ -6,7 +6,7 @@ var sqlite3 = require('sqlite3');
 //データベースオブジェクトの取得
 const db = new sqlite3.Database('memo_data.db');
 
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
     db.serialize(() => {
         db.all("select * from memos", (err, rows) => {
             if (!err) {
@@ -20,7 +20,7 @@ router.get('/', function(req, res, next) {
     })
 });
 
-router.post('/add', function(req, res, next) {
+router.post('/', (req, res, next) => {
     const tx = req.body.text;
     db.run('insert into memos (text) values (?)', tx, (err) => {
         if (!err) {
@@ -29,8 +29,8 @@ router.post('/add', function(req, res, next) {
     })
 });
 
-router.post('/edit', function(req, res, next) {
-    const id = req.body.id;
+router.put('/:id', (req, res, next) => {
+    const id = req.params.id
     const tx = req.body.text;
     const q = "update memos set text = ? where id = ?";
     db.run(q, tx, id, (err) => {
@@ -40,8 +40,8 @@ router.post('/edit', function(req, res, next) {
     })
 });
 
-router.post('/delete', function(req, res, next) {
-    const id = req.body.id;
+router.delete('/:id', (req, res, next) => {
+    const id = req.params.id
     const q = "delete from memos where id = ?";
     db.run(q, id, (err) => {
         if (!err) {
