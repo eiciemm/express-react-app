@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const app = express()
 const port = process.env.PORT || 3001
 
-var memoRouter = require('./routes/v1/memo');
+var memoRouter = require('./routes/v1/memos');
 
 const allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use('/api/v1/memo', memoRouter);
+app.use('/api/v1/memos', memoRouter);
 
 app.listen(port, () => {
   console.log(`listening on *:${port}`);
